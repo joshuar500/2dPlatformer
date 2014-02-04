@@ -1,11 +1,15 @@
 package GameState;
 
+import Entity.Enemies.Slugger;
+import Entity.Enemy;
+import Entity.HUD;
 import Entity.Player;
 import Main.GamePanel;
 import TileMap.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 
 public class Level1State extends GameState {
@@ -14,6 +18,10 @@ public class Level1State extends GameState {
     private Background bg;
 
     private Player player;
+
+    private ArrayList<Enemy> enemies;
+
+    private HUD hud;
 
     public Level1State(GameStateManager gsm) {
         this.gsm = gsm;
@@ -27,11 +35,21 @@ public class Level1State extends GameState {
         tileMap.loadTiles("/Tilesets/grasstileset.gif");
         tileMap.loadMap("/Maps/level1-1.map");
         tileMap.setPosition(0,0);
+        tileMap.setTween(1);
 
         bg = new Background("/Backgrounds/grassbg1.gif", 0.1);
 
         player = new Player(tileMap);
         player.setPosition(100, 100);
+
+        enemies = new ArrayList<Enemy>();
+
+        Slugger s;
+        s = new Slugger(tileMap);
+        s.setPosition(100, 100);
+        enemies.add(s);
+
+        hud = new HUD(player);
 
     }
 
@@ -43,6 +61,14 @@ public class Level1State extends GameState {
 
         //update tilemap depending on player position
         tileMap.setPosition(GamePanel.WIDTH / 2 - player.getx(), GamePanel.HEIGHT / 2 - player.gety());
+
+        //set background move
+        bg.setPosition(tileMap.getx(), tileMap.gety());
+
+        //update all enemies
+        for(int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).update();
+        }
 
     }
 
@@ -57,6 +83,14 @@ public class Level1State extends GameState {
 
         //draw player
         player.draw(g);
+
+        //draw enemies
+        for(int i = 0; i < enemies.size(); i++){
+            enemies.get(i).draw(g);
+        }
+
+        //draw hud
+        hud.draw(g);
 
     }
 
